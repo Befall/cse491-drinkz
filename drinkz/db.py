@@ -49,7 +49,10 @@ def get_liquor_amount(mfg, liquor):
     amounts = []
     for (m, l, amount) in _inventory_db:
         if mfg == m and liquor == l:
-            amounts.append(amount)
+            if amount[-1] == 'l'
+                amounts.append(amount)
+            else
+                amounts.append(29.5735 * amount)
 
     return amounts[0]
 
