@@ -3,14 +3,14 @@ Database functionality for drinkz information.
 """
 
 # private singleton variables at module level
-_bottle_types_db = []
-_inventory_db = []
+_bottle_types_db = set()
+_inventory_db = dict()
 
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
     global _bottle_types_db, _inventory_db
-    _bottle_types_db = []
-    _inventory_db = []
+    _bottle_types_db = set()
+    _inventory_db = dict()
 
 # exceptions in Python inherit from Exception and generally don't need to
 # override any methods.
@@ -35,10 +35,10 @@ def add_to_inventory(mfg, liquor, amount):
         raise LiquorMissing(err)
 
     # just add it to the inventory database as a tuple, for now.
-    _inventory_db.append((mfg, liquor, amount))
+    _inventory_db[(mfg, liquor)] = amount
 
 def check_inventory(mfg, liquor):
-    for (m, l, _) in _inventory_db:
+    for (m, l) in _inventory_db:
         if mfg == m and liquor == l:
             return True
         
@@ -47,9 +47,9 @@ def check_inventory(mfg, liquor):
 def get_liquor_amount(mfg, liquor):
     "Retrieve the total amount of any given liquor currently in inventory."
     amounts = []
-    for (m, l, amount) in _inventory_db:
+    for (m, l) in _inventory_db:
         if mfg == m and liquor == l:
-            amounts.append(amount)
+            amounts.append(_inventory_db[m, l])
 
     total = 0.0
     for amount in amounts:
@@ -69,5 +69,5 @@ def get_liquor_amount(mfg, liquor):
 
 def get_liquor_inventory():
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
-    for (m, l, _) in _inventory_db:
+    for (m, l) in _inventory_db:
         yield m, l
