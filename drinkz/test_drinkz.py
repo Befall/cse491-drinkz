@@ -12,7 +12,10 @@ sys.path.insert(0, 'bin/') # allow _mypath to be loaded; @CTB hack hack hack
 from cStringIO import StringIO
 import imp
 
-from . import db, load_bulk_data
+try:
+    from . import db, load_bulk_data
+except ValueError:
+    import db, load_bulk_data
 
 def test_foo():
     # this test always passes; it's just to show you how it's done!

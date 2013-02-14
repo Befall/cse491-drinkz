@@ -32,6 +32,8 @@ def load_bottle_types(fp):
         except ValueError:
             print 'Badly formatted line: %s' % line
             continue
+        if not line.strip():
+            continue
         
         n += 1
         db.add_bottle_type(mfg, name, typ)
