@@ -19,7 +19,7 @@ class LiquorMissing(Exception):
 
 def add_bottle_type(mfg, liquor, typ):
     "Add the given bottle type into the drinkz database."
-    _bottle_types_db.append((mfg, liquor, typ))
+    _bottle_types_db.add((mfg, liquor, typ))
 
 def _check_bottle_type_exists(mfg, liquor):
     for (m, l, _) in _bottle_types_db:
@@ -34,8 +34,10 @@ def add_to_inventory(mfg, liquor, amount):
         err = "Missing liquor: manufacturer '%s', name '%s'" % (mfg, liquor)
         raise LiquorMissing(err)
 
-    # just add it to the inventory database as a tuple, for now.
-    _inventory_db[(mfg, liquor)] = amount
+    if (mfg, liquor) not in _inventory_db:
+        _inventory_db[(mfg, liquor)] = amount
+    else:
+        _inventory_db[(mfg, liquor)] += amount
 
 def check_inventory(mfg, liquor):
     for (m, l) in _inventory_db:
@@ -46,17 +48,21 @@ def check_inventory(mfg, liquor):
 
 def get_liquor_amount(mfg, liquor):
     "Retrieve the total amount of any given liquor currently in inventory."
-    total = 0;
+    total = float(0);
     for (m, l) in _inventory_db:
         if mfg == m and liquor == l:
-            if _inventory_db[(m, l)][-1] == 'l':
+            amount = float(_inventory_db[(m,l)].split()[0])
+            unit = _inventory_db[(m,l)].split()[1]
+            if unit == "ml":
                 total += amount
-            elif _inventory_db[(m, l)][-1] == 'z':
+            elif unit == "oz":
                 total += 29.5735 * amount
+            elif unit == "gallon" or unit == "gallons":
+                total += 3785.41 * amount
             else:
-                raise Exception("Unknown unit ending in %s" % _inventory_db[(m, l)][-1]
+                raise Exception("Unknown unit: ", unit, " m: ", m, " l: ", l)
 
-    return "%s ml" % total
+    return total
 
 def get_liquor_inventory():
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."

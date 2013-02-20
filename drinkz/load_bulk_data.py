@@ -9,7 +9,6 @@ Module to load in bulk data from text files.
 #
 
 import csv                              # Python csv package
-
 from . import db                        # import from local package
 
 def load_bottle_types(fp):
@@ -31,8 +30,6 @@ def load_bottle_types(fp):
             (mfg, name, typ) = line
         except ValueError:
             print 'Badly formatted line: %s' % line
-            continue
-        if not line.strip():
             continue
         
         n += 1
