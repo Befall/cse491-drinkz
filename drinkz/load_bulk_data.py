@@ -12,15 +12,6 @@ import csv                              # Python csv package
 from . import db                        # import from local package
 
 def load_bottle_types(fp):
-    """
-    Loads in data of the form manufacturer/liquor name/type from a CSV file.
-
-    Takes a file pointer.
-
-    Adds data to database.
-
-    Returns number of bottle types loaded
-    """
     reader = parse_csv(fp)
 
     x = []
@@ -38,23 +29,10 @@ def load_bottle_types(fp):
     return n
 
 def load_inventory(fp):
-    """
-    Loads in data of the form manufacturer/liquor name/amount from a CSV file.
-
-    Takes a file pointer.
-
-    Adds data to database.
-
-    Returns number of records loaded.
-
-    Note that a LiquorMissing exception is raised if bottle_types_db does
-    not contain the manufacturer and liquor name already.
-    """
     reader = parse_csv(fp)
 
     x = []
     n = 0
-
     for line in reader:
         try:
             (mfg, name, amount) = line

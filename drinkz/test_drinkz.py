@@ -85,7 +85,7 @@ def test_bulk_load_inventory_3():
     data = "Johnnie Walker,Black Label,1000 ml\na,b\n"
     fp = StringIO(data)                 # make this look like a file handle
     n = load_bulk_data.load_inventory(fp)
-
+    
     assert db.check_inventory('Johnnie Walker', 'Black Label')
     assert n == 1, n
 
@@ -109,6 +109,8 @@ def test_get_liquor_amount_3():
     data = "Johnnie Walker,Black Label,1000 ml\nJohnnie Walker,Black Label,500 ml"
     fp = StringIO(data)                 # make this look like a file handle
     n = load_bulk_data.load_inventory(fp)
+    
+    print db._inventory_db
 
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
     assert amount == 1500.0, amount
@@ -121,6 +123,8 @@ def test_get_liquor_amount_4():
     data = "Johnnie Walker,Black Label,1000 ml\nJohnnie Walker,Black Label,50 oz"
     fp = StringIO(data)                 # make this look like a file handle
     n = load_bulk_data.load_inventory(fp)
+
+    print db._inventory_db
 
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
     assert amount == 2478.675, amount
