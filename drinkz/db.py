@@ -2,6 +2,8 @@
 Database functionality for drinkz information.
 """
 
+from sets import Set
+
 # private singleton variables at module level
 _bottle_types_db = set()
 _inventory_db = dict()
@@ -15,7 +17,7 @@ the keys being the names of the recipes, and the values the recipes themselves.
 
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
-    global _bottle_types_db, _inventory_db
+    global _bottle_types_db, _inventory_db, _recipe_db
     _bottle_types_db = set()
     _inventory_db = dict()
     _recipe_db = dict()
@@ -90,13 +92,10 @@ def add_recipe(recipe):
     if _recipe_db.has_key(recipe.name) == False:
         _recipe_db[recipe.name] = recipe
     else:
-        raise Exception("Duplicate recipe!")
+        raise DuplicateRecipeName
 
 def get_recipe(name):
-    for recipe in _recipe_db:
-        if _recipe_db[recipe].name == name:
-            return recipe
-    return
+    return _recipe_db.get(name)
 
 def get_all_recipes():
     for recipe in _recipe_db:
@@ -104,7 +103,9 @@ def get_all_recipes():
 
 def check_inventory_for_type(type):
     total = 0.0
+    liquorsGrabbed = Set([])
     for (m, l, t) in _bottle_types_db:
-        if t == type:
-            total += convertToMl(_inventory_db[(m,l)])
+        if t == type and (l not in liquorsGrabbed or t > total):
+            total = convertToMl(_inventory_db[(m,l)])
+            liquorsGrabbed.add(l)
     return total

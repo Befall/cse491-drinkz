@@ -31,6 +31,7 @@ class TestBasicRecipeStuff(unittest.TestCase):
         db.add_recipe(r)
             
         r2 = recipes.Recipe('scotch on the rocks', [('vodka', '4 oz')])
+
         try:
             db.add_recipe(r2)
             assert 0, "this is a duplicate recipe and the add should fail"
@@ -107,6 +108,7 @@ class TestIngredients(object):
         r = recipes.Recipe('whiskey bath', [('blended scotch', '6 liter')])
 
         missing = r.need_ingredients()
+        print missing
         assert missing == [('blended scotch', 1000.0)]
 
     def test_generic_replacement_no_mix(self):
