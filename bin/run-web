@@ -1,0 +1,7 @@
+# Starts web application at the bottom of the current app.py
+
+from wsgiref.simple_server import make_server
+import urlparse
+import simplejson
+
+
