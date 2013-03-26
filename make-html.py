@@ -42,7 +42,7 @@ fp.close()
 
 fp = open('html/recipes.html', 'w')
 
-print >>fp, "<a href='index.html'>Back to Index</a><p><ul>"
+print >>fp, "<a href='/'>Back to Index</a><p><ul>"
 
 for recipe in db.get_all_recipes():
     print >>fp, "<li> ", recipe.name, ": "
@@ -58,7 +58,7 @@ fp.close()
 
 fp = open('html/inventory.html', 'w')
 
-print >>fp, "<a href='index.html'>Back to Index</a><p><ul>"
+print >>fp, "<a href='/'>Back to Index</a><p><ul>"
 
 for (m, f) in db._inventory_db:
     print >>fp, "<li> ", m, " - ", f, " - ", db._inventory_db[(m, f)]
@@ -69,7 +69,7 @@ fp.close()
 
 fp = open('html/liquor_types.html', 'w')
 
-print >>fp, "<a href='index.html'>Back to Index</a><p><ul>"
+print >>fp, "<a href='/'>Back to Index</a><p><ul>"
 
 for (m, f, g) in db._bottle_types_db:
     print >>fp, "<li> ", m, " - ", f, " - ", g

@@ -2,12 +2,13 @@
 from wsgiref.simple_server import make_server
 import urlparse
 import simplejson
+import db, recipes
 
 dispatch = {
     '/' : 'index',
-    '/content' : 'somefile',
-    '/error' : 'error',
-    '/helmet' : 'helmet',
+    '/recipes' : 'recipes',
+    '/inventory' : 'inventory',
+    '/liquor' : 'liquor',
     '/form' : 'form',
     '/recv' : 'recv',
     '/rpc'  : 'dispatch_rpc'
@@ -33,23 +34,33 @@ class SimpleApp(object):
         return fn(environ, start_response)
             
     def index(self, environ, start_response):
+
         data = """\
-Visit:
-<a href='content'>a file</a>,
-<a href='error'>an error</a>,
-<a href='helmet'>an image</a>,
-<a href='somethingelse'>something else</a>, or
-<a href='form'>a form...</a>
-<p>
-<img src='/helmet'>
-"""
+        Table of contents:<br>
+        <a href='recipes'>List of Recipes</a><br>
+        <a href='inventory'>Inventory</a><br>
+        <a href='liquor'>Liquor Types</a><br>
+        <a href='form'>Volume Converter</a><br>
+        """
+
         start_response('200 OK', list(html_headers))
         return [data]
         
-    def somefile(self, environ, start_response):
+    def recipes(self, environ, start_response):
         content_type = 'text/html'
-        data = open('somefile.html').read()
+        data = """\
+        <a href='/'>Return to Index</a><p>
+        """
 
+        for recipe in db.get_all_recipes():
+            data += "<li %s: " % recipe.name
+            if not recipe.need_ingredients():
+                data += "AVAILABLE"
+            else:
+                data += "NEED "
+                for (l, a) in recipe.need_ingredients():
+                    data += "%s - %sml, " % (l, a)
+                
         start_response('200 OK', list(html_headers))
         return [data]
 
@@ -61,11 +72,29 @@ Visit:
         start_response('200 OK', list(html_headers))
         return [data]
 
-    def helmet(self, environ, start_response):
-        content_type = 'image/gif'
-        data = open('Spartan-helmet-Black-150-pxls.gif', 'rb').read()
+    def inventory(self, environ, start_response):
+        content_type = 'text/html'
+        data = """\
+        <a href='/'>Return to Index</a><p>
+        """
 
-        start_response('200 OK', [('Content-type', content_type)])
+        for (m, f) in db._inventory_db:
+            data += "<li> %s - %s - %s" % (m, f, db._inventory>db[(m, f)])
+        
+        start_response('200 OK', list(html_headers))
+        return [data]
+
+    def liquor(self, environ, start_response):
+        content_type = 'text/html'
+        data = """\
+        <a href='/'>Return to Index</a><p>
+        """
+
+        for (m, f, g) in db._bottle_types_db:
+            data += "<li> %s - %s - %s" % (m, f, g)
+        data += "</ul>"
+
+        start_response('200 OK', list(html_headers))
         return [data]
 
     def form(self, environ, start_response):
@@ -78,11 +107,22 @@ Visit:
         formdata = environ['QUERY_STRING']
         results = urlparse.parse_qs(formdata)
 
-        firstname = results['firstname'][0]
-        lastname = results['lastname'][0]
+        origAmount = float(results['amount'][0])
+        measurement = results['measurement'][0]
+        amount = origAmount
+
+        if measurement == "oz":
+            amount *= 29.5735
+        elif measurement == "gal":
+            amount *= 3785.41
+        elif measurement == "lt":
+            amount *= 1000.0
+        else:
+            raise Exception("Unknown unit input: ", measurement)
+            return 0
 
         content_type = 'text/html'
-        data = "First name: %s; last name: %s.  <a href='./'>return to index</a>" % (firstname, lastname)
+        data = "%s %s = %s ml<br><br> <a href='/'>Return to Index</a>" % (origAmount, measurement, amount)
 
         start_response('200 OK', list(html_headers))
         return [data]
@@ -135,21 +175,12 @@ Visit:
     
 def form():
     return """
-<form action='recv'>
-Your first name? <input type='text' name='firstname' size'20'>
-Your last name? <input type='text' name='lastname' size='20'>
-<input type='submit'>
-</form>
-"""
-
-if __name__ == '__main__':
-    import random, socket
-    port = random.randint(8000, 9999)
-    
-    app = SimpleApp()
-    
-    httpd = make_server('', port, app)
-    print "Serving on port %d..." % port
-    print "Try using a Web browser to go to http://%s:%d/" % \
-          (socket.getfqdn(), port)
-    httpd.serve_forever()
+    <form action='recv'>
+    Amount to convert: <input type='number' name='amount' size'10'>
+    Measurement used: <select name='measurement'>
+    <option value='oz'>Ounces</option>
+    <option value='gal'>Gallon</option>
+    <option value='lt'>Liter</option></select>
+    <input type='submit'>
+    </form>
+    """
