@@ -14,7 +14,7 @@ dispatch = {
     '/rpc'  : 'dispatch_rpc'
 }
 
-html_headers = [('Content-type', 'text/html')]
+html_headers = [('Content-Type', 'text/html')]
 
 class SimpleApp(object):
     def __call__(self, environ, start_response):
@@ -36,12 +36,19 @@ class SimpleApp(object):
     def index(self, environ, start_response):
 
         data = """\
-        Table of contents:<br>
+        <html><head><title>Home - Drinkz - Alex Lockwood</title>
+        <style type="text/css">
+        h1 {color:red;}
+        p {color:black;}
+        </style></head><body>
+
+        <h1>Table of Contents</h1><p>
         <a href='recipes'>List of Recipes</a><br>
         <a href='inventory'>Inventory</a><br>
         <a href='liquor'>Liquor Types</a><br>
-        <a href='form'>Volume Converter</a><br>
+        <a href='form'>Volume Converter</a><br></p></body></html>
         """
+
 
         start_response('200 OK', list(html_headers))
         return [data]
@@ -49,18 +56,25 @@ class SimpleApp(object):
     def recipes(self, environ, start_response):
         content_type = 'text/html'
         data = """\
+        <html><head><title>Recipes - Drinkz - Alex Lockwood</title>
+        <style type="text/css">
+        h1 {color:red;}
+        p {color:black;}
+        </style></head><body>
+        <h1>Recipe List</h1>
         <a href='/'>Return to Index</a><p>
         """
 
         for recipe in db.get_all_recipes():
-            data += "<li %s: " % recipe.name
+            data += "<li> %s: " % recipe.name
             if not recipe.need_ingredients():
                 data += "AVAILABLE"
             else:
                 data += "NEED "
                 for (l, a) in recipe.need_ingredients():
                     data += "%s - %sml, " % (l, a)
-                
+
+        data += "</p></body></html>"
         start_response('200 OK', list(html_headers))
         return [data]
 
@@ -75,25 +89,38 @@ class SimpleApp(object):
     def inventory(self, environ, start_response):
         content_type = 'text/html'
         data = """\
+        <html><head><title>Inventory - Drinkz - Alex Lockwood</title>
+        <style type="text/css">
+        h1 {color:red;}
+        p {color:black;}
+        </style></head><body>
+        <h1>Inventory List</h1>
         <a href='/'>Return to Index</a><p>
         """
 
         for (m, f) in db._inventory_db:
-            data += "<li> %s - %s - %s" % (m, f, db._inventory>db[(m, f)])
-        
+            data += "<li> %s - %s - %s" % (m, f, db._inventory_db[(m, f)])
+
+        data += "</p></body></html>"        
         start_response('200 OK', list(html_headers))
         return [data]
 
     def liquor(self, environ, start_response):
         content_type = 'text/html'
         data = """\
+        <html><head><title>Liquors - Drinkz - Alex Lockwood</title>
+        <style type="text/css">
+        h1 {color:red;}
+        p {color:black;}
+        </style></head><body>
+        <h1>Liquor List</h1>
         <a href='/'>Return to Index</a><p>
         """
 
         for (m, f, g) in db._bottle_types_db:
             data += "<li> %s - %s - %s" % (m, f, g)
-        data += "</ul>"
 
+        data += "</ul></p></body></html>"
         start_response('200 OK', list(html_headers))
         return [data]
 
@@ -107,7 +134,9 @@ class SimpleApp(object):
         formdata = environ['QUERY_STRING']
         results = urlparse.parse_qs(formdata)
 
-        origAmount = float(results['amount'][0])
+        origAmount = 0
+        if results.has_key('amount'):
+            origAmount = float(results['amount'][0])
         measurement = results['measurement'][0]
         amount = origAmount
 
@@ -122,8 +151,18 @@ class SimpleApp(object):
             return 0
 
         content_type = 'text/html'
-        data = "%s %s = %s ml<br><br> <a href='/'>Return to Index</a>" % (origAmount, measurement, amount)
+        data = """\
+        <html><head><title>Liquors - Drinkz - Alex Lockwood</title>
+        <style type="text/css">
+        h1 {color:red;}
+        p {color:black;}
+        </style></head><body>
+        <h1>mL Converter</h1>
+        """
 
+        data += "%s %s = %s ml<br><br> <a href='/'>Return to Index</a>" % (origAmount, measurement, amount)
+
+        data += "</ul></p></body></html>"
         start_response('200 OK', list(html_headers))
         return [data]
 
@@ -172,11 +211,33 @@ class SimpleApp(object):
 
     def rpc_add(self, a, b):
         return int(a) + int(b)
-    
+
+    def rpc_convert_units_to_ml(self, amount):
+        return db.convertToMl(amount)
+
+    def rpc_get_recipe_names(self):
+        recipe_list = []
+        for r in db.get_all_recipes():
+            recipe_list.append(r.name)
+        return recipe_list
+
+    def rpc_get_liquor_inventory(self):
+        liquor_list = []
+        for (m, l) in db.get_liquor_inventory():
+            liquor_list.append((m, l))
+        return liquor_list
+
 def form():
     return """
+    <html><head><title>mL Converter - Drinkz - Alex Lockwood</title>
+    <style type="text/css">
+    h1 {color:red;}
+    p {color:black;}
+    </style></head><body>
+    <h1>mL Converter</h1>
+    <a href='/'>Return to Index</a><p>
     <form action='recv'>
-    Amount to convert: <input type='number' name='amount' size'10'>
+    Amount to convert: <input type='number' name='amount' min="0" size'10'>
     Measurement used: <select name='measurement'>
     <option value='oz'>Ounces</option>
     <option value='gal'>Gallon</option>
