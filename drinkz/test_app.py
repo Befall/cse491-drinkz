@@ -6,7 +6,8 @@
 from wsgiref.simple_server import make_server
 import urlparse
 import simplejson
-import db, recipes
+import drinkz.recipes
+from drinkz import db
 from app import SimpleApp
 
 def populate_database():
@@ -40,10 +41,10 @@ if __name__ == '__main__':
         d['status'] = s
         d['headers'] = h
 
-    populate_database()
-    assert db._recipe_db.has_key('vodka martini')
-    assert db._recipe_db.has_key('whiskey sour') == False
-#    db.load_db('../bin/drinkz.txt')
+#    populate_database()
+#    assert db._recipe_db.has_key('vodka martini')
+#    assert db._recipe_db.has_key('whiskey sour') == False
+    db.load_db('../bin/drinkz.txt')
 
     app = SimpleApp()
     results = app(environ, my_start_response)
