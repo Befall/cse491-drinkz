@@ -6,9 +6,8 @@
 from wsgiref.simple_server import make_server
 import urlparse
 import simplejson
-import drinkz.recipes
-from drinkz import db
 from app import SimpleApp
+import db, recipes
 
 def populate_database():
     db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
