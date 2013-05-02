@@ -1,0 +1,1 @@
+In order to properly bulk load the database of recipes, call db.load_db(filename), passing in an exact filename. This loads and populates the three databases in db.py.

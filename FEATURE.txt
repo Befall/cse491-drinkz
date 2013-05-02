@@ -1,0 +1,7 @@
+Homework #6.2 feature information:
+
+Core features:
+- Users can post parties they are throwing, includes basic address/time info
+- Users can join said parties, add liquors they are bringing
+- Party owner can define recipes he wants at his parties (cut due to difficulty in properly doing so)
+- Users viewing party can see which recipes are requested, liquors provided, and users coming to said party
