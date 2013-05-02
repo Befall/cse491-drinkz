@@ -1,19 +1,7 @@
-Class project stuff for:
+Got 1 done, I think. Still confused on how the requests are defined but my testing seemed to work.
+Got 2 done.
+Got 3 done except for getting it working on Arctic. I got everything working locally with identical conditions and inputs. Refer to db.save_db_sqlite and db.load_db_sqlite to see it, I'm proud of that code.
+No idea how to do 4.
+Got 5 done minus passwords. Didn't have time.
 
-http://msu-web-dev.readthedocs.org/en/latest/
-
-THE STORY SO FAR:
-
-You're throwing a mixed drinks party, where everyone is going to make
-their own mixed drinks.  But your liquor cabinet is small and not that
-well stocked, because you're a student, and you don't have any money.
-What you really want is to list the stuff *you* have, and then have
-people bring stuff that *they* have that complements your stuff for
-the purpose of making the mixed drinks they want to make.  But there's
-no app for that.
-
-Hmmmm... a startup idea is born!
-
-Running the tests:
-
-To run the tests, 'nosetests'.  'nosetests -v' will give you the test names.
+Overall, I'm sorry I've been such a shit student and a burden to Titus especially. I wish you all the best.
